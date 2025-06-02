@@ -73,7 +73,7 @@ You can get started using either the **provided Docker container** or by setting
 
 ### Option 1: Using the Provided Docker Container (Recommended)
 
-1. **Install Docker** (if you don’t have it):  
+1. **Install Docker** (if you don't have it):  
    https://docs.docker.com/get-docker/
 
 2. **Pull the Docker image**:
