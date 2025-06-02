@@ -1,4 +1,4 @@
-# Zebrafish Genomic Safe Harbor Site Identification Hackathon
+# Zebrafish Genomic Safe Harbor Sites Identification Hackathon
 
 Welcome to the **Zebrafish Genomic Safe Harbor Sites Identification Hackathon**!  
 This challenge invites participants to identify potential **genomic safe harbor (GSH) sites** in the **zebrafish genome** using an **integrative omics approach**.
