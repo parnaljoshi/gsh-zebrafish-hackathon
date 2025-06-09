@@ -6,7 +6,8 @@ This challenge invites participants to identify potential **genomic safe harbor 
 ---
 ## Background
 
-What are gshs, why is it important to identify them, citation
+Identifying genomic safe harbor (GSH) sites in the zebrafish genome enables precise and stable transgene integration without disrupting endogenous gene function or regulation. Zebrafish is a widely used model organism in genetics, developmental biology, and disease modeling, and finding reliable GSH sites facilitates consistent gene expression for functional studies, therapeutic gene delivery, and synthetic biology applications. Establishing these sites enhances experimental reproducibility and reduces the risk of insertional mutagenesis, advancing both basic research and translational efforts using zebrafish as a platform.
+
 
 ---
 
