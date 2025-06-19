@@ -43,22 +43,6 @@ Participants are encouraged to take an **integrative multi-omics approach**. Ide
 
 ---
 
-## Evaluation Criteria
-
-Submissions will be evaluated on:
-
-- **Integration of multiple data types** (Hi-C, expression, annotations, etc.)
-- **Clarity**, **documentation**, and **reproducibility** of your analysis
-- **Creativity** in data analysis
-
-**Bonus points for**:
-
-- Visualization of candidate regions
-- Scoring or ranking system for candidate GSHs
-- Reusable pipeline code
-
----
-
 ## Repository Structure
 
 ```text
