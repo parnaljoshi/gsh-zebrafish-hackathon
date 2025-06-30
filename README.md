@@ -16,7 +16,7 @@ Identifying genomic safe harbor (GSH) sites in the zebrafish genome enables prec
 Identify candidate **genomic safe harbor (GSH)** sites in the zebrafish genome that meet the following criteria:
 
 - **Safe**: Insertion does not disrupt essential genes or regulatory elements.
-- **Stable**: Integration site allows for consistent transgene expression across time and tissues.
+- **Stable**: Integration site allows for consistent transgene expression across time.
 - **Accessible**: Site is located in transcriptionally active and/or open chromatin regions.
 
 ---
@@ -27,8 +27,8 @@ Participants will be provided with the following datasets in the `data/` directo
 
 | Data Type         | Description                                                        | Format               |
 |-------------------|--------------------------------------------------------------------|----------------------|
-| Gene Expression   | RNA-seq profiles across tissues and developmental stages           | `.tsv`, `.csv`       |
-| Hi-C Data         | Chromatin conformation data for 3D genome structure                | `.hic`, `.cool`, `.bedpe` |
+| Gene Expression   | RNA-seq profiles across developmental stages           | `.tsv`       |
+| Hi-C Data         | Genomic compartment data across developmental stages               | `.bw` |
 | Genome Annotations| Zebrafish GRCz11 gene and regulatory annotations                  | `.gtf`, `.bed`       |
 
 ---
@@ -37,7 +37,7 @@ Participants will be provided with the following datasets in the `data/` directo
 
 Participants are encouraged to take an **integrative multi-omics approach**. Ideas include:
 
-- Using RNA-Seq data to do something.......
+- Using **RNA-Seq data** to find areas of the genome containing **ubiquitously expressed genes** across developmental timepoints.
 - Using **Hi-C data** to locate **A compartments** or **TADs** associated with open chromatin.
 - Avoiding genes and regulatory elements.
 
