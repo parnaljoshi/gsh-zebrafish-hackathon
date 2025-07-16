@@ -23,8 +23,9 @@ Identify candidate **genomic safe harbor (GSH)** sites in the zebrafish genome t
 
 ## Data
 
-Participants will be provided with the following datasets in the `data/` directory:
+Participants will be provided with the following datasets:
 
+Data is available on CyBox here: https://iastate.app.box.com/s/rw07ev9hvlcc4f63e5361jrpmq7e4fne 
 | Data Type         | Description                                                        | Format               |
 |-------------------|--------------------------------------------------------------------|----------------------|
 | Gene Expression   | RNA-seq profiles across developmental stages           | `.tsv`       |
@@ -47,10 +48,9 @@ Participants are encouraged to take an **integrative multi-omics approach**. Ide
 
 ```text
 .
-├── data/             # Input data: expression, Hi-C, annotations
-├── notebooks/        # Jupyter or R notebooks
-├── scripts/          # Python/R scripts for analysis
-├── results/          # Output files, figures, candidate GSHs
+├── gsh.sh        # Starter script
+├── Dockerfile        # Dockerfile
+├── GSH_Zebrafish_Hackathon_ISMB2025.pdf          # Instructions
 ├── README.md         # This readme file
 └── requirements.txt  # Software dependencies
 ```
@@ -68,16 +68,13 @@ You can get started using either the **provided Docker container** or by setting
 
 2. **Pull the Docker image**:
    ```bash
-   docker pull parnaljoshi/gsh-zebrafish-hackathon:latest
+   docker pull kunalxs/gsh-pipeline-v2:hackathon_v1
    ```
    
 3. **Run the container**:
    ```bash
-   docker run -it --rm -v $(pwd):/workspace -p 8888:8888 parnaljoshi/gsh-zebrafish-hackathon
+   docker run --rm -it -v ${PWD}\gshDataRepo:/app/data/gshdatarepo kunalxs/gsh-pipeline-v2:hackathon_v1
    ```
-
-4. **Access Jupyter Notebook**:  
-   Open your browser and go to: http://localhost:8888
 
 ---
 
@@ -94,7 +91,7 @@ You can get started using either the **provided Docker container** or by setting
    pip install -r requirements.txt
    ```
 
-4. **Begin your analysis** using notebooks or scripts provided.
+4. **Begin your analysis** using the starter script ```gsh.sh```.
 
 ---
 
