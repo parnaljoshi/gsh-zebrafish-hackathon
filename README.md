@@ -25,12 +25,13 @@ Identify candidate **genomic safe harbor (GSH)** sites in the zebrafish genome t
 
 Participants will be provided with the following datasets:
 
-Data is available on CyBox here: https://iastate.app.box.com/s/rw07ev9hvlcc4f63e5361jrpmq7e4fne 
-| Data Type         | Description                                                        | Format               |
-|-------------------|--------------------------------------------------------------------|----------------------|
-| Gene Expression   | RNA-seq profiles across developmental stages           | `.tsv`       |
-| Hi-C Data         | Genomic compartment data across developmental stages               | `.bw` |
-| Genome Annotations| Zebrafish GRCz11 gene and regulatory annotations                  | `.gtf`, `.bed`       |
+Data is available on Box: https://iastate.app.box.com/s/rw07ev9hvlcc4f63e5361jrpmq7e4fne 
+
+| Data Type         | Description                                                        | Format                                         |
+|-------------------|--------------------------------------------------------------------|------------------------------------------------|
+| Genome Annotations| Zebrafish GRCz11 gene and regulatory annotations                   | `.gtf`, `.bed`, `.tsv`, `.txt`, `.fasta`       |
+| Gene Expression   | RNA-seq profiles across developmental stages                       | `.tsv`                                         |
+| Hi-C Data         | Genomic compartment data across developmental stages               | `.bw`                                          |
 
 ---
 
