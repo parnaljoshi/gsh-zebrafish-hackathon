@@ -48,8 +48,7 @@ Participants are encouraged to take an **integrative multi-omics approach**. Ide
 ## Deliverables
 
 1. **List of predicted genomic safe harbor regions using your approach of choice:**
- - Instructions on how to run/execute the pipeline
-   - A tab-separated (or similar formatted) file with columns:
+ - A tab-separated (or similar formatted) file with columns:
       * `Chromosome number`
       * `Start coordinates`
       * `End coordinates`
