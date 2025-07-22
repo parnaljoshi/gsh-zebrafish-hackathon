@@ -27,19 +27,20 @@ Participants will be provided with the following datasets:
 
 Data is available on Box: https://iastate.app.box.com/s/rw07ev9hvlcc4f63e5361jrpmq7e4fne 
 
-| Data Type         | Description                                                        | Format                                         |
-|-------------------|--------------------------------------------------------------------|------------------------------------------------|
-| Genome Annotations| Zebrafish GRCz11 gene and regulatory annotations                   | `.gtf`, `.bed`, `.tsv`, `.txt`, `.fasta`       |
-| Gene Expression   | RNA-seq profiles across developmental stages                       | `.tsv`                                         |
-| Hi-C Data         | Genomic compartment data across developmental stages               | `.bw`                                          |
+| Data Type         | Description                                                        | Format                                         | Wiki            |
+|-------------------|--------------------------------------------------------------------|------------------------------------------------|-----------------|
+| Genome Annotations| Zebrafish GRCz11 gene and regulatory annotations                   | `.gtf`, `.bed`, `.tsv`, `.txt`, `.fasta`       |                 |
+| Gene Expression   | RNA-seq profiles across developmental stages                       | `.tsv`                                         |                 |
+| Hi-C Data         | Genomic compartment data across developmental stages               | `.bw`                                          |                 |
 
+For details about individual datasets, please refer to the [Wiki](https://github.com/parnaljoshi/gsh-zebrafish-hackathon/wiki)
 ---
 
 ## More about the goal and approach
 
-The overarching goal of this project is to identify genomic safe harbor sites in the zebrafish genome which are stable and active across developmental timepoints. The current approach that we have implemented as a Dockerized workflow [below](https://github.com/parnaljoshi/gsh-zebrafish-hackathon/blob/main/README.md#option-1-using-the-provided-docker-container-recommended) uses genomic annotation features to filter and select appropriate locations where a transgene can be inserted. This method provides 41 locations across all chromosomes that could serve as potential safe harbor sites. **This list of sites can be a starting point for further filtering.** For more information about the Docker setup and workflow is available on [Wiki](https://github.com/parnaljoshi/gsh-zebrafish-hackathon/wiki/Docker-Setup) 
+The overarching goal of this project is to identify genomic safe harbor sites in the zebrafish genome which are stable and active across developmental timepoints. The current approach that we have implemented as a Dockerized workflow [below](https://github.com/parnaljoshi/gsh-zebrafish-hackathon/blob/main/README.md#option-1-using-the-provided-docker-container-recommended) uses genomic annotation features to filter and select appropriate locations where a transgene can be inserted. This method provides 41 locations across all chromosomes that could serve as potential safe harbor sites. **This list of sites can be a starting point for further filtering to include the temporal aspect.** Additional information about the Docker setup and workflow is available on [Wiki](https://github.com/parnaljoshi/gsh-zebrafish-hackathon/wiki/Docker-Setup) 
 
-To obtain a more confident list of safe harbor sites, participants are encouraged to take an **integrative multi-omics approach**. Ideas include but are not limited to:
+To obtain a confident list of safe harbor sites across different zebrafish developmental stages, participants are encouraged to take an **integrative multi-omics approach**. Ideas include but are not limited to:
 
 - Using **RNA-Seq data** to find areas of the genome containing **ubiquitously expressed genes** across developmental timepoints.
 - Using **Hi-C data** to locate **A compartments** or **TADs** associated with open chromatin.
