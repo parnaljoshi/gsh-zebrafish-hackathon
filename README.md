@@ -27,19 +27,19 @@ Participants will be provided with the following datasets:
 
 Data is available on Box: https://iastate.app.box.com/s/rw07ev9hvlcc4f63e5361jrpmq7e4fne 
 
-| Data Type         | Description                                                        | Format                                         | Wiki            |
-|-------------------|--------------------------------------------------------------------|------------------------------------------------|-----------------|
-| Genome Annotations| Zebrafish GRCz11 gene and regulatory annotations                   | `.gtf`, `.bed`, `.tsv`, `.txt`, `.fasta`       |                 |
-| Gene Expression   | RNA-seq profiles across developmental stages                       | `.tsv`                                         |                 |
-| Hi-C Data         | Genomic compartment data across developmental stages               | `.bw`                                          |                 |
+| Data Type         | Description                                          | Format                                         | Wiki page                                                                        |
+|-------------------|------------------------------------------------------|------------------------------------------------|----------------------------------------------------------------------------------|
+| Genome Annotations| Zebrafish GRCz11 gene and regulatory annotations     | `.gtf`, `.bed`, `.tsv`, `.txt`, `.fasta`       | https://github.com/parnaljoshi/gsh-zebrafish-hackathon/wiki/Annotation-Data      |
+| Gene Expression   | RNA-seq profiles across developmental stages         | `.tsv`                                         | https://github.com/parnaljoshi/gsh-zebrafish-hackathon/wiki/Gene-Expression-Data |
+| Hi-C Data         | Genomic compartment data across developmental stages | `.bw`                                          | https://github.com/parnaljoshi/gsh-zebrafish-hackathon/wiki/Hi%E2%80%90C-Data    |
 
-For details about individual datasets, plese refer to the [Wiki](https://github.com/parnaljoshi/gsh-zebrafish-hackathon/wiki)
+For details about individual datasets, please refer to the [Wiki](https://github.com/parnaljoshi/gsh-zebrafish-hackathon/wiki)
 
 ---
 
 ## More about the goal and approach
 
-The overarching goal of this project is to identify genomic safe harbor sites in the zebrafish genome which are stable and active across developmental timepoints. The current approach that we have implemented as a Dockerized workflow [below](https://github.com/parnaljoshi/gsh-zebrafish-hackathon/blob/main/README.md#option-1-using-the-provided-docker-container-recommended) uses genomic annotation features to filter and select appropriate locations where a transgene can be inserted. This method provides 41 locations across all chromosomes that could serve as potential safe harbor sites. **This list of sites can be a starting point for further filtering to include the temporal aspect.** Additional information about the Docker setup and workflow is available on [Wiki](https://github.com/parnaljoshi/gsh-zebrafish-hackathon/wiki/Docker-Setup) 
+The overarching goal of this project is to identify genomic safe harbor sites in the zebrafish genome that are stable and active across developmental timepoints. The current approach that we have implemented as a Dockerized workflow [below](https://github.com/parnaljoshi/gsh-zebrafish-hackathon/blob/main/README.md#option-1-using-the-provided-docker-container-recommended) uses genomic annotation features to filter and select appropriate locations where a transgene can be inserted. This method provides 41 locations across all chromosomes that could serve as potential safe harbor sites. **This list of sites can be a starting point for further filtering to include the temporal aspect.** Additional information about the Docker setup and workflow is available on [Wiki](https://github.com/parnaljoshi/gsh-zebrafish-hackathon/wiki/Docker-Setup) 
 
 To obtain a confident list of safe harbor sites across different zebrafish developmental stages, participants are encouraged to take an **integrative multi-omics approach**. Ideas include but are not limited to:
 
@@ -51,7 +51,7 @@ To obtain a confident list of safe harbor sites across different zebrafish devel
 
 ## Deliverables
 
-1. **List of predicted genomic safe harbor regions using your approach of choice:**
+1. **A list of predicted genomic safe harbor regions using your approach of choice:**
    - A tab-separated (or similar formatted) file with columns:
       * `Chromosome number`
       * `Start coordinates`
@@ -59,7 +59,7 @@ To obtain a confident list of safe harbor sites across different zebrafish devel
       * `Size in bp`
       * `Strand`
     
-2. **Well-documented and reproducible workflow:**
+2. **A well-documented and reproducible workflow:**
    - A containerized pipeline using tools such as Docker/Singularity (preferred), or other approach of your choice
    - Instructions on how to run/execute the pipeline
 
