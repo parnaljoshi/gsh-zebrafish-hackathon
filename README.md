@@ -31,7 +31,7 @@ Data is available on Box: https://iastate.app.box.com/s/rw07ev9hvlcc4f63e5361jrp
 |-------------------|------------------------------------------------------|------------------------------------------------|----------------------------------------------------------------------------------|
 | Genome Annotations| Zebrafish GRCz11 gene and regulatory annotations     | `.gtf`, `.bed`, `.tsv`, `.txt`, `.fasta`       | https://github.com/parnaljoshi/gsh-zebrafish-hackathon/wiki/Annotation-Data      |
 | Gene Expression   | RNA-seq profiles across developmental stages         | `.tsv`                                         | https://github.com/parnaljoshi/gsh-zebrafish-hackathon/wiki/Gene-Expression-Data |
-| Hi-C Data         | Genomic compartment data across developmental stages | `.bw`                                          | https://github.com/parnaljoshi/gsh-zebrafish-hackathon/wiki/Hi-C-Data    |
+| Hi-C Data         | Genomic compartment data across developmental stages | `.bw`                                          | https://github.com/parnaljoshi/gsh-zebrafish-hackathon/wiki/Hi%E2%80%90C-Data    |
 
 For details about individual datasets, please refer to the [Wiki](https://github.com/parnaljoshi/gsh-zebrafish-hackathon/wiki)
 
