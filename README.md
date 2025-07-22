@@ -39,7 +39,7 @@ For details about individual datasets, please refer to the [Wiki](https://github
 
 ## More about the goal and approach
 
-The overarching goal of this project is to identify genomic safe harbor sites in the zebrafish genome that are stable and active across developmental timepoints. The current approach that we have implemented as a Dockerized workflow [below](https://github.com/parnaljoshi/gsh-zebrafish-hackathon/blob/main/README.md#option-1-using-the-provided-docker-container-recommended) uses genomic annotation features to filter and select appropriate locations where a transgene can be inserted. This method provides 41 locations across all chromosomes that could serve as potential safe harbor sites. **This list of sites can be a starting point for further filtering to include the temporal aspect.** Additional information about the Docker setup and workflow is available on [Wiki](https://github.com/parnaljoshi/gsh-zebrafish-hackathon/wiki/Docker-Setup) 
+The overarching goal of this project is to identify genomic safe harbor sites in the zebrafish genome that are stable and active across developmental timepoints. The current approach that we have implemented as a Dockerized workflow [below](https://github.com/parnaljoshi/gsh-zebrafish-hackathon/blob/main/README.md#option-1-using-the-provided-docker-container-recommended) uses genomic annotation features to filter and select appropriate locations where a transgene can be inserted. This method provides 40 locations across all chromosomes that could serve as potential safe harbor sites. **This list of sites can be a starting point for further filtering to include the temporal aspect.** Additional information about the Docker setup and workflow is available on [Wiki](https://github.com/parnaljoshi/gsh-zebrafish-hackathon/wiki/Docker-Setup) 
 
 To obtain a confident list of safe harbor sites across different zebrafish developmental stages, participants are encouraged to take an **integrative multi-omics approach**. Ideas include but are not limited to:
 
@@ -79,7 +79,18 @@ To obtain a confident list of safe harbor sites across different zebrafish devel
 
 ## Getting Started
 
-You can get started using either the **provided Docker container** or by setting up the environment manually. To run the provided Docker container, make sure you download the data from Box https://iastate.app.box.com/s/rw07ev9hvlcc4f63e5361jrpmq7e4fne, and 
+You can get started using either the **provided Docker container** or by setting up the environment manually. To run the provided Docker container, download the data from Box https://iastate.app.box.com/s/rw07ev9hvlcc4f63e5361jrpmq7e4fne, and make sure the following directory structure exists:
+
+```
+.                                # Working directory
+├── AnnotationData/              # Contains all input files and receives output
+    ├── Danio_rerio.GRCz11.113.gtf
+    ├── danRer11-chromInfo.txt
+    ├── ... (all other input files)
+    └── output/                  # Final results will be written here
+```
+
+The list of safe harbors will be written to **`AnnotationData/output/Safe_harbors.bed`**. The directory will also contain a `.fasta` format file containing sequences of the correspoding safe harbor regions.
 
 ---
 
@@ -102,12 +113,9 @@ You can get started using either the **provided Docker container** or by setting
 
    On **PowerShell (Windows)**:
    ```powershell
-   docker run --rm -it -v "${PWD}\AnnotationData:/app/data/annotationdata:rw" gsh-docker-v3
+   docker run --rm -it -v "${PWD}\AnnotationData:/app/data/annotationdata:rw" kunalxs/gsh-docker-v5:hackathon
    ```
-   ```bash
-   docker run --rm -it -v ${PWD}\gshDataRepo:/app/data/gshdatarepo kunalxs/gsh-docker-v5:hackathon
-   ```
-
+   
 ---
 
 ### Option 2: Manual Setup
