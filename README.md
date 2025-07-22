@@ -69,12 +69,12 @@ You can get started using either the **provided Docker container** or by setting
 
 2. **Pull the Docker image**:
    ```bash
-   docker pull kunalxs/gsh-pipeline-v2:hackathon_v1
+   docker pull kunalxs/gsh-docker-v5:hackathon
    ```
    
 3. **Run the container**:
    ```bash
-   docker run --rm -it -v ${PWD}\gshDataRepo:/app/data/gshdatarepo kunalxs/gsh-pipeline-v2:hackathon_v1
+   docker run --rm -it -v ${PWD}\gshDataRepo:/app/data/gshdatarepo kunalxs/gsh-docker-v5:hackathon
    ```
 
 ---
