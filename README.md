@@ -75,7 +75,7 @@ Participants are encouraged to take an **integrative multi-omics approach**. Ide
 
 ## Getting Started
 
-You can get started using either the **provided Docker container** or by setting up the environment manually.
+You can get started using either the **provided Docker container** or by setting up the environment manually. To run the provided Docker container, make sure you download the data from Box https://iastate.app.box.com/s/rw07ev9hvlcc4f63e5361jrpmq7e4fne, and 
 
 ---
 
@@ -90,6 +90,16 @@ You can get started using either the **provided Docker container** or by setting
    ```
    
 3. **Run the container**:
+
+   On **Linux/macOS**:
+   ```bash
+   docker run --rm -it -v "$PWD/AnnotationData:/app/data/annotationdata:rw" kunalxs/gsh-docker-v5:hackathon
+   ```
+
+   On **PowerShell (Windows)**:
+   ```powershell
+   docker run --rm -it -v "${PWD}\AnnotationData:/app/data/annotationdata:rw" gsh-docker-v3
+   ```
    ```bash
    docker run --rm -it -v ${PWD}\gshDataRepo:/app/data/gshdatarepo kunalxs/gsh-docker-v5:hackathon
    ```
