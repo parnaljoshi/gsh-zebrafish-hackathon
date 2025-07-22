@@ -33,7 +33,8 @@ Data is available on Box: https://iastate.app.box.com/s/rw07ev9hvlcc4f63e5361jrp
 | Gene Expression   | RNA-seq profiles across developmental stages                       | `.tsv`                                         |                 |
 | Hi-C Data         | Genomic compartment data across developmental stages               | `.bw`                                          |                 |
 
-For details about individual datasets, please refer to the [Wiki](https://github.com/parnaljoshi/gsh-zebrafish-hackathon/wiki)
+For details about individual datasets, plese refer to the [Wiki](https://github.com/parnaljoshi/gsh-zebrafish-hackathon/wiki)
+
 ---
 
 ## More about the goal and approach
