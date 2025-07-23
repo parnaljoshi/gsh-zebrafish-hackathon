@@ -325,3 +325,4 @@ echo "Results written to ${OUTPUT_DIR}/Safe_harbors.bed and ${OUTPUT_DIR}/Safe_h
 
 # docker tag local-image:tagname new-repo:tagname
 # docker push new-repo:tagname
+# #sudo docker run --rm   -v "$(pwd)/AnnotationData:/app/AnnotationData"   -v "$(pwd)/Output:/app/Output"   gsh-docker-custom-v5
