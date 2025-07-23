@@ -117,6 +117,11 @@ The list of safe harbors will be written to **`Output/Safe_harbors.bed`**. The d
    ```powershell
    docker run --rm -v "${PWD}/AnnotationData:/app/AnnotationData" -v "${PWD}/Output:/app/Output" parnaljoshi/gsh-docker-hackathon
    ```
+
+   On **WSL + Docker Desktop (Windows)**:
+   ```powershell
+   docker run --rm -v "/mnt/path/to/AnnotationData:/app/AnnotationData" -v "/mnt/path/to/Output:/app/Output" parnaljoshi/gsh-docker-hackathon
+   ```
    
 ---
 
