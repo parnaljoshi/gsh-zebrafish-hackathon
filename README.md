@@ -106,7 +106,7 @@ The list of safe harbors will be written to **`AnnotationData/output/Safe_harbor
    
 3. **Run the container**:
 
-   On **Linux/macOS**:
+   On **Linux/MacOS**:
    ```bash
    docker run --rm -it -v "$PWD/AnnotationData:/app/data/annotationdata:rw" kunalxs/gsh-docker-v5:hackathon
    ```
@@ -118,7 +118,9 @@ The list of safe harbors will be written to **`AnnotationData/output/Safe_harbor
    
 ---
 
-### Option 2: Manual Setup
+### Option 2: Manual Setup 
+
+Requires Linux/MacOS or Windows Subsystem for Linux 
 
 1. **Clone the repository**:
    ```bash
@@ -126,12 +128,23 @@ The list of safe harbors will be written to **`AnnotationData/output/Safe_harbor
    cd gsh-zebrafish-hackathon
    ```
 
-2. **Install dependencies**
+2. **Make the shell file executable**
    ```bash
-   pip install -r requirements.txt
+   chmod +x install_gsh_dependencies.sh
    ```
 
-4. **Begin your analysis** using the starter script ```gsh.sh```.
+3. **Install dependencies**
+   ```bash
+   ./install_gsh_dependencies.sh
+   ```
 
+4. **Begin your analysis** using the starter script `gsh.sh`
+   Ensure that `AnnotationData` directory and `gsh.sh` script are in the same directory 
+   ```bash
+   cp gsh.sh ..
+   cd ..
+   bash gsh.sh
+   ```
+   
 ---
 
