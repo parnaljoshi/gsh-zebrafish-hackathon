@@ -145,6 +145,8 @@ Requires Linux/MacOS or Windows Subsystem for Linux
    cd ..
    bash gsh.sh
    ```
-   
+
+`Safe_harbors.bed` and `Safe_harbors.fasta` are written to the working directory.
+ 
 ---
 
