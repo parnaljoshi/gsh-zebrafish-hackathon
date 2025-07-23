@@ -76,6 +76,7 @@ To obtain a confident list of safe harbor sites across different zebrafish devel
 ├── README.md         # This readme file
 └── install_gsh_dependencies.sh  # Software dependencies
 ```
+---
 
 ## Getting Started
 
