@@ -320,7 +320,7 @@ bedtools getfasta \
     -bed "${OUTPUT_DIR}/Safe_harbors.bed" \
     > "${OUTPUT_DIR}/Safe_harbors.fasta"
 
-echo "Results written to ${OUTPUT_DIR}/Safe_harbors.bed and .fasta"
+echo "Results written to ${OUTPUT_DIR}/Safe_harbors.bed and ${OUTPUT_DIR}/Safe_harbors.fasta"
 
 
 # docker tag local-image:tagname new-repo:tagname
