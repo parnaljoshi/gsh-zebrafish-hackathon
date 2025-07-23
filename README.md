@@ -74,7 +74,7 @@ To obtain a confident list of safe harbor sites across different zebrafish devel
 ├── Dockerfile        # Dockerfile
 ├── GSH_Zebrafish_Hackathon_ISMB2025.pdf          # Instructions
 ├── README.md         # This readme file
-└── requirements.txt  # Software dependencies
+└── install_gsh_dependencies.sh  # Software dependencies
 ```
 
 ## Getting Started
