@@ -90,7 +90,7 @@ You can get started using either the **provided Docker container** or by setting
     └── output/                  # Final results will be written here
 ```
 
-The list of safe harbors will be written to **`AnnotationData/output/Safe_harbors.bed`**. The directory will also contain a `.fasta` format file containing sequences of the correspoding safe harbor regions.
+The list of safe harbors will be written to **`Output/Safe_harbors.bed`**. The directory will also contain a `.fasta` format file containing sequences of the corresponding safe harbor regions.
 
 ---
 
@@ -146,7 +146,7 @@ Requires Linux/MacOS or Windows Subsystem for Linux
    bash gsh.sh
    ```
 
-`Safe_harbors.bed` and `Safe_harbors.fasta` are written to the working directory.
+`Safe_harbors.bed` and `Safe_harbors.fasta` are written to `Output/` directory.
  
 ---
 
