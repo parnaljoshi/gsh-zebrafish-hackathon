@@ -101,7 +101,7 @@ The list of safe harbors will be written to **`Output/Safe_harbors.bed`**. The d
 
 2. **Pull the Docker image**:
    ```bash
-   docker pull kunalxs/gsh-docker-v5:hackathon
+   docker pull parnaljoshi/gsh-docker-hackathon
    ```
    
 3. **Run the container**:
