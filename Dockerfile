@@ -5,7 +5,7 @@ ENV DEBIAN_FRONTEND=noninteractive
 RUN apt-get update && \
     apt-get install -y \
     wget curl unzip build-essential zlib1g-dev libbz2-dev \
-    liblzma-dev bedtools bash
+    liblzma-dev bedtools bash less
 
 # Install bedops
 RUN mkdir -p /opt/bedops && \
