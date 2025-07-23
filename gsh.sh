@@ -526,11 +526,11 @@ fi
 mkdir -p Output
 
 # Copy the tmpGsh folder
-mv tmpGsh Output/tmpGsh
+mv AnnotationData/tmpGsh Output/tmpGsh
 
 # Copy Safe_harbors output files
-mv Safe_harbors.bed Output/
-mv Safe_harbors.fasta Output/
+mv AnnotationData/Safe_harbors.bed Output/
+mv AnnotationData/Safe_harbors.fasta Output/
 
 echo "Copy finished."
 echo "Outputs are saved inside directory Output/"
