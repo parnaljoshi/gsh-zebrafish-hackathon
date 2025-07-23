@@ -79,7 +79,7 @@ To obtain a confident list of safe harbor sites across different zebrafish devel
 
 ## Getting Started
 
-You can get started using either the **provided Docker container** or by setting up the environment manually. To run the provided Docker container, download the data from Box https://iastate.app.box.com/s/rw07ev9hvlcc4f63e5361jrpmq7e4fne, and make sure the following directory structure exists:
+You can get started using either the **provided Docker container** or by **setting up the environment manually**. To run the provided Docker container, download the data from Box https://iastate.app.box.com/s/rw07ev9hvlcc4f63e5361jrpmq7e4fne, and make sure the following directory structure exists:
 
 ```
 .                                # Working directory
@@ -87,7 +87,6 @@ You can get started using either the **provided Docker container** or by setting
     ├── Danio_rerio.GRCz11.113.gtf
     ├── danRer11-chromInfo.txt
     ├── ... (all other input files)
-    └── output/                  # Final results will be written here
 ```
 
 The list of safe harbors will be written to **`Output/Safe_harbors.bed`**. The directory will also contain a `.fasta` format file containing sequences of the corresponding safe harbor regions.
