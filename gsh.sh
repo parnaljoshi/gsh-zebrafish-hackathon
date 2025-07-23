@@ -526,7 +526,7 @@ fi
 mkdir -p Output
 
 # Copy the tmpGsh folder
-cp -r tmpGsh Output/tmpGsh
+mv -r tmpGsh Output/tmpGsh
 
 # Copy Safe_harbors output files
 mv Safe_harbors.bed Output/
