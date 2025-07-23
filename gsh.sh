@@ -13,6 +13,16 @@
 # THE DEFAULTS INITIALIZATION
 # ./gsh.sh -genes true -oncogenes true -micrornas true -trnas true -lncrnas true -enhancers true -centromeres true -gaps true -dist_from_genes 50000 -dist_from_oncogenes 300000 -dist_from_micrornas 300000 -dist_from_trnas 150000 -dist_from_lncrnas 150000 -dist_from_enhancers 20000 -dist_from_centromeres 300000 -dist_from_gaps 300000
 
+#------------------------ CONFIGURATION -------------------------------#
+
+INPUT_DIR="AnnotationData"
+OUTPUT_DIR="Output"
+TMP_DIR="${OUTPUT_DIR}/tmpGsh"
+
+mkdir -p "$TMP_DIR"
+
+#------------------------ DEFAULT PARAMETERS --------------------------#
+
 genes=true
 oncogenes=true
 micrornas=true
@@ -162,379 +172,155 @@ set -- "${POSITIONAL[@]}" # restore positional parameters
 
 #=======================================================================
 
-DIRECTORY=tmpGsh
-if [ -d "$DIRECTORY" ]; then
-  rm -r $DIRECTORY
+#------------------------ FUNCTION: Process BED with Flanks -----------#
+add_flanks_and_merge() {
+    local input_bed="$1"
+    local output_dir="$2"
+    local flank="$3"
+    local chrom_sizes="${INPUT_DIR}/danRer11-chromInfo.txt"
+    local base=$(basename "$input_bed" .bed)
+
+    mkdir -p "$output_dir"
+
+    bedtools slop -b "$flank" -i "$input_bed" -g "$chrom_sizes" > "${output_dir}/${base}_with_flanks.bed"
+    sortBed -i "${output_dir}/${base}_with_flanks.bed" > "${output_dir}/${base}_with_flanks_sorted.bed"
+    bedtools merge -i "${output_dir}/${base}_with_flanks_sorted.bed" > "${output_dir}/${base}_with_flanks_merged.bed"
+}
+
+#------------------------ GENES ---------------------------------------#
+if [ "$genes" = true ]; then
+    echo "[+] Processing Genes"
+    DIR="${TMP_DIR}/genes"
+    mkdir -p "$DIR"
+
+    grep -P '\tgene\t' "${INPUT_DIR}/Danio_rerio.GRCz11.113.gtf" > "${DIR}/genes.gtf"
+    awk '{ if ($0 ~ "transcript_id") print $0; else print $0" transcript_id \"\";"; }' "${DIR}/genes.gtf" > "${DIR}/genes_tx.gtf"
+
+    gtf2bed < "${DIR}/genes_tx.gtf" | awk -v OFS="\t" '{print $1, $2, $3}' > "${DIR}/genes_raw.bed"
+
+    awk 'BEGIN { OFS="\t" } $1 ~ /^[0-9XY]+$/ { $1="chr"$1; print }' "${DIR}/genes_raw.bed" > "${DIR}/genes.bed"
+
+    add_flanks_and_merge "${DIR}/genes.bed" "$DIR" "$dist_from_genes"
 fi
 
-mkdir tmpGsh	# Creatingg a temporary folder for intermediate files
+#------------------------ ONCOGENES -----------------------------------#
+if [ "$oncogenes" = true ]; then
+    echo "[+] Processing Oncogenes"
+    DIR="${TMP_DIR}/oncogenes"
+    mkdir -p "$DIR"
 
-#=======================================================================
-#						     Genes
-#=======================================================================
+    grep -w -f "${INPUT_DIR}/danRer11-oncogenes_list.txt" "${TMP_DIR}/genes/genes_tx.gtf" > "${DIR}/oncogenes.gtf"
+    gtf2bed < "${DIR}/oncogenes.gtf" | awk -v OFS="\t" '{print "chr"$1, $2, $3}' > "${DIR}/oncogenes_raw.bed"
 
-if [ "$genes" = true ] ; then
-	echo "Distance from genes = ${dist_from_genes} bp"
+    cut -f1 "${INPUT_DIR}/danRer11-chromInfo.txt" | sort | uniq > "${DIR}/valid_chroms.txt"
+    awk 'NR==FNR {valid[$1]; next} $1 in valid' "${DIR}/valid_chroms.txt" "${DIR}/oncogenes_raw.bed" > "${DIR}/oncogenes.bed"
 
-	mkdir -p tmpGsh/genes
-	dir=tmpGsh/genes
-
-	echo "1. Extracting gene entries from GTF..."
-    grep -P '\tgene\t' AnnotationData/Danio_rerio.GRCz11.113.gtf > ${dir}/gencode_gene_anotation.gtf
-	wc -l ${dir}/gencode_gene_anotation.gtf
-
-	echo "2. Adding dummy transcript_id if missing..."
-	awk '{ if ($0 ~ "transcript_id") print $0; else print $0" transcript_id \"\";"; }' \
-		${dir}/gencode_gene_anotation.gtf > ${dir}/gencode_v24_annotation_genes_transcript_id.gtf
-	wc -l ${dir}/gencode_v24_annotation_genes_transcript_id.gtf
-
-	echo "3 .Converting GTF to BED (gene coordinates only)..."
-	gtf2bed --max-mem 3G < ${dir}/gencode_v24_annotation_genes_transcript_id.gtf | \
-		awk -v OFS="\t" '{print $1, $2, $3}' > ${dir}/gencode_v24_annotation_genes_raw.bed
-	wc -l ${dir}/gencode_v24_annotation_genes_raw.bed
-
-    echo "4. Filtering BED to include only valid chromosomes (starting with chr, excluding chrM)..."
-
-    awk 'BEGIN { OFS="\t" }
-    {
-        if ($1 ~ /^[0-9XY]+$/) {
-            $1 = "chr" $1;
-            print
-        }
-    }' ${dir}/gencode_v24_annotation_genes_raw.bed > ${dir}/gencode_v24_annotation_genes.bed
-
-    wc -l ${dir}/gencode_v24_annotation_genes.bed
-
-	echo "5. Adding ${dist_from_genes} bp flanks to gene coordinates..."
-	bedtools slop -b ${dist_from_genes} \
-		-i ${dir}/gencode_v24_annotation_genes.bed \
-		-g AnnotationData/danRer11-chromInfo.txt \
-		> ${dir}/gencode_v24_annotation_genes_with_flanks.bed
-	wc -l ${dir}/gencode_v24_annotation_genes_with_flanks.bed
-
-	echo "6. Sorting gene + flank regions..."
-	sortBed -i ${dir}/gencode_v24_annotation_genes_with_flanks.bed \
-		> ${dir}/gencode_v24_annotation_genes_with_flanks_sorted.bed
-	wc -l ${dir}/gencode_v24_annotation_genes_with_flanks_sorted.bed
-
-	echo "7. Merging overlapping flanked regions..."
-	bedtools merge -i ${dir}/gencode_v24_annotation_genes_with_flanks_sorted.bed \
-		> ${dir}/gencode_v24_annotation_genes_with_flanks_merged.bed
-	wc -l ${dir}/gencode_v24_annotation_genes_with_flanks_merged.bed
-
-	echo "Gene annotations processed."
+    add_flanks_and_merge "${DIR}/oncogenes.bed" "$DIR" "$dist_from_oncogenes"
 fi
 
-#=======================================================================
-#							 Oncogenes 3.00
-#=======================================================================
+#------------------------ microRNAs -----------------------------------#
+if [ "$micrornas" = true ]; then
+    echo "[+] Processing microRNAs"
+    DIR="${TMP_DIR}/micrornas"
+    mkdir -p "$DIR"
 
-if [ "$oncogenes" = true ] ; then
-	echo "Distance from oncogenes = ${dist_from_oncogenes} bp"
-
-	# Create output directory
-	echo "Creating directory: tmpGsh/oncogenes"
-	mkdir -p tmpGsh/oncogenes
-	dir=tmpGsh/oncogenes
-
-	# Step 1: Extract GTF entries for oncogenes
-	echo "Extracting GTF entries for oncogenes..."
-	grep -w -f AnnotationData/danRer11-oncogenes_list.txt tmpGsh/genes/gencode_v24_annotation_genes_transcript_id.gtf \
-		> ${dir}/gencode_oncogenes_annotation_transcript_id.gtf
-	echo "GTF lines extracted: $(wc -l < ${dir}/gencode_oncogenes_annotation_transcript_id.gtf)"
-
-	# Step 2: Convert GTF to BED, add 'chr' prefix
-	echo "Converting GTF to BED format and adding 'chr' prefix..."
-	gtf2bed --max-mem 3G < ${dir}/gencode_oncogenes_annotation_transcript_id.gtf \
-	| awk -v OFS="\t" '{print "chr"$1, $2, $3}' \
-	| tee ${dir}/gencode_v24_annotation_oncogenes_raw.bed \
-	> ${dir}/gencode_v24_annotation_oncogenes.bed
-	echo "Valid 'chr' BED entries: $(wc -l < ${dir}/gencode_v24_annotation_oncogenes.bed)"
-
-	# Step 3: Save any non-'chr' entries (should be none now)
-	echo "Saving non-'chr' BED entries for review..."
-	grep -v "^chr" ${dir}/gencode_v24_annotation_oncogenes_raw.bed > ${dir}/excluded_non_chr.bed
-	echo "Non-'chr' BED entries: $(wc -l < ${dir}/excluded_non_chr.bed)"
-
-	# Step 4: Filter BED entries to match only known chromosomes in chromInfo
-	echo "Filtering BED entries to only include chromosomes listed in danRer11-chromInfo.txt..."
-	cut -f1 AnnotationData/danRer11-chromInfo.txt | sort | uniq > ${dir}/valid_chroms.txt
-
-	awk 'NR==FNR {valid[$1]; next} $1 in valid' ${dir}/valid_chroms.txt ${dir}/gencode_v24_annotation_oncogenes.bed \
-	> ${dir}/gencode_v24_annotation_oncogenes_filtered.bed
-	echo "Filtered BED entries (valid chroms only): $(wc -l < ${dir}/gencode_v24_annotation_oncogenes_filtered.bed)"
-
-	# Step 5: Add flanking regions to each oncogene
-	echo "Adding flanks of ${dist_from_oncogenes} bp to each oncogene region..."
-	bedtools slop -b ${dist_from_oncogenes} -i ${dir}/gencode_v24_annotation_oncogenes_filtered.bed -g AnnotationData/danRer11-chromInfo.txt \
-		> ${dir}/gencode_v24_annotation_oncogenes_with_flanks.bed
-	echo "Oncogene regions with flanks: $(wc -l < ${dir}/gencode_v24_annotation_oncogenes_with_flanks.bed)"
-
-	# Step 6: Sort the flanked regions
-	echo "Sorting the flanked regions..."
-	sortBed -i ${dir}/gencode_v24_annotation_oncogenes_with_flanks.bed \
-		> ${dir}/gencode_v24_annotation_oncogenes_with_flanks_sorted.bed
-	echo "Sorted flanked regions: $(wc -l < ${dir}/gencode_v24_annotation_oncogenes_with_flanks_sorted.bed)"
-
-	# Step 7: Merge overlapping flanked regions
-	echo "Merging overlapping flanked regions..."
-	bedtools merge -i ${dir}/gencode_v24_annotation_oncogenes_with_flanks_sorted.bed \
-		> ${dir}/gencode_v24_annotation_oncogenes_with_flanks_merged.bed
-	echo "Merged flanked regions: $(wc -l < ${dir}/gencode_v24_annotation_oncogenes_with_flanks_merged.bed)"
-
-	echo "Oncogene annotations processed."
+    add_flanks_and_merge "${INPUT_DIR}/danRer11-miRNAs.bed" "$DIR" "$dist_from_micrornas"
 fi
 
-#=======================================================================
-#						   MicroRNAs
-#=======================================================================
+#------------------------ lncRNAs -------------------------------------#
+if [ "$lncrnas" = true ]; then
+    echo "[+] Processing lncRNAs"
+    DIR="${TMP_DIR}/lncrnas"
+    mkdir -p "$DIR"
 
-if [ "$micrornas" = true ] ; then
-	echo "Distance from microRNAs = ${dist_from_micrornas}" bp
-	mkdir tmpGsh/micrornas
-	dir=tmpGsh/micrornas
-	
-	# get genomic regions of length ${dist_from_micrornas} base pairs flanking microRNAs from both sides
-	bedtools slop -b ${dist_from_micrornas} -i AnnotationData/danRer11-miRNAs.bed -g AnnotationData/danRer11-chromInfo.txt >> ${dir}/Micrornas_with_flanks.bed
+    awk '{ if ($0 ~ "transcript_id") print $0; else print $0" transcript_id \"\";"; }' "${INPUT_DIR}/danRer11-lncRNA.gtf" > "${DIR}/lncRNAs.gtf"
+    gtf2bed < "${DIR}/lncRNAs.gtf" | awk -v OFS="\t" '{print $1, $2, $3}' > "${DIR}/lncRNAs.bed"
 
-	# merge regions containing microRNAs and their flanking regions
-	sortBed -i ${dir}/Micrornas_with_flanks.bed >> ${dir}/Micrornas_with_flanks_sorted.bed
-
-	bedtools merge -i ${dir}/Micrornas_with_flanks_sorted.bed >> ${dir}/Micrornas_with_flanks_merged.bed
-
-	echo "miRNA annotations processed."
-	
+    add_flanks_and_merge "${DIR}/lncRNAs.bed" "$DIR" "$dist_from_lncrnas"
 fi
 
-#=======================================================================
-#					     Long-non-coding RNAs
-#=======================================================================
+#------------------------ tRNAs ---------------------------------------#
+if [ "$trnas" = true ]; then
+    echo "[+] Processing tRNAs"
+    DIR="${TMP_DIR}/trnas"
+    mkdir -p "$DIR"
 
-if [ "$lncrnas" = true ] ; then
-	echo "Distance from lncRNAs = ${dist_from_lncrnas}" bp
+    gtf2bed < "${INPUT_DIR}/danRer11-tRNAs.gtf" | awk -v OFS="\t" '{print $1, $2, $3}' > "${DIR}/tRNAs.bed"
 
-	mkdir tmpGsh/lncrnas
-	dir=tmpGsh/lncrnas
-
-	# get lncRNA annotation from GENCODE
-	awk '{ if ($0 ~ "transcript_id") print $0; else print $0" transcript_id \"\";"; }' AnnotationData/danRer11-lncRNA.gtf >> ${dir}/gencode_v24_long_noncoding_RNAs_transcript_id.gtf
-
-	gtf2bed < ${dir}/gencode_v24_long_noncoding_RNAs_transcript_id.gtf | awk -v OFS="\t" '{print $1, $2, $3}' >> ${dir}/gencode_v24_long_noncoding_RNAs.bed
-
-	# get genomic regions of length ${dist_from_lncrnas} base pairs flanking lncRNAs from both sides
-	bedtools slop -b ${dist_from_lncrnas} -i ${dir}/gencode_v24_long_noncoding_RNAs.bed -g AnnotationData/danRer11-chromInfo.txt >> ${dir}/gencode_v24_long_noncoding_RNAs_with_flanks.bed
-
-	# merge regions containing lncRNAs and their flanking regions
-	sortBed -i ${dir}/gencode_v24_long_noncoding_RNAs_with_flanks.bed >> ${dir}/gencode_v24_long_noncoding_RNAs_with_flanks_sorted.bed
-
-	bedtools merge -i ${dir}/gencode_v24_long_noncoding_RNAs_with_flanks_sorted.bed >> ${dir}/gencode_v24_long_noncoding_RNAs_with_flanks_merged.bed
-
-	echo "lncRNA annotations processed."
+    add_flanks_and_merge "${DIR}/tRNAs.bed" "$DIR" "$dist_from_trnas"
 fi
 
-#=======================================================================
-#						     tRNAs
-#=======================================================================
+#------------------------ Enhancers -----------------------------------#
+if [ "$enhancers" = true ]; then
+    echo "[+] Processing Enhancers"
+    DIR="${TMP_DIR}/enhancers"
+    mkdir -p "$DIR"
 
-if [ "$trnas" = true ] ; then
-	echo "Distance from tRNAs = ${dist_from_trnas}" bp
-
-	mkdir tmpGsh/trnas
-	dir=tmpGsh/trnas
-
-	# get tRNA annotation from GENCODE
-	gtf2bed < AnnotationData/danRer11-tRNAs.gtf | awk -v OFS="\t" '{print $1, $2, $3}' >> ${dir}/gencode_v24_tRNAs.bed
-
-	# get genomic regions of length ${dist_from_trnas} base pairs flanking tRNAs from both sides
-	bedtools slop -b ${dist_from_trnas} -i ${dir}/gencode_v24_tRNAs.bed -g AnnotationData/danRer11-chromInfo.txt >> ${dir}/gencode_v24_tRNAs_with_flanks.bed
-
-	# merge regions containing tRNAs and their flanking regions
-	sortBed -i ${dir}/gencode_v24_tRNAs_with_flanks.bed >> ${dir}/gencode_v24_tRNAs_with_flanks_sorted.bed
-
-	bedtools merge -i ${dir}/gencode_v24_tRNAs_with_flanks_sorted.bed >> ${dir}/gencode_v24_tRNAs_with_flanks_merged.bed
-
-	echo "tRNA annotations processed."
-	
+    add_flanks_and_merge "${INPUT_DIR}/danRer11-enhancers.bed" "$DIR" "$dist_from_enhancers"
 fi
 
-#=======================================================================
-#							 Enhancers
-#=======================================================================
+#------------------------ Centromeres ---------------------------------#
+if [ "$centromeres" = true ]; then
+    echo "[+] Processing Centromeres"
+    DIR="${TMP_DIR}/centromeres"
+    mkdir -p "$DIR"
 
-if [ "$enhancers" = true ] ; then
-	echo "Distance from enhancers = ${dist_from_enhancers}" bp
+    tail -n +3 "${INPUT_DIR}/danRer11-centromeres.tsv" | awk -v OFS="\t" '{print $1, $2, $3}' > "${DIR}/centromeres.bed"
 
-	mkdir tmpGsh/enhancers
-	dir=tmpGsh/enhancers
-	
-	# get genomic regions of length ${dist_from_enhancers} base pairs flanking enhancers from both sides
-	bedtools slop -b ${dist_from_enhancers} -i AnnotationData/danRer11-enhancers.bed -g AnnotationData/danRer11-chromInfo.txt >> ${dir}/All_human_enhancers_with_flanks.bed
-
-	# merge regions containing enhancers and their flanking regions
-	sortBed -i ${dir}/All_human_enhancers_with_flanks.bed >> ${dir}/All_human_enhancers_with_flanks_sorted.bed
-
-	bedtools merge -i ${dir}/All_human_enhancers_with_flanks_sorted.bed >> ${dir}/All_human_enhancers_with_flank_merged.bed
-
-	echo "Enhancer annotations processed."
-
+    add_flanks_and_merge "${DIR}/centromeres.bed" "$DIR" "$dist_from_centromeres"
 fi
 
-#=======================================================================
-#    						Centromeres
-#=======================================================================
+#------------------------ Gaps ----------------------------------------#
+if [ "$gaps" = true ]; then
+    echo "[+] Processing Gaps"
+    DIR="${TMP_DIR}/gaps"
+    mkdir -p "$DIR"
 
-if [ "$centromeres" = true ] ; then
-	echo "Distance from centromeres = ${dist_from_centromeres}" bp
+    tail -n +2 "${INPUT_DIR}/danRer11-gap.txt" | cut -f 2,3,4 > "${DIR}/gaps.bed"
 
-	mkdir tmpGsh/centromeres
-	dir=tmpGsh/centromeres
-
-	# get genomic coordinates of centromeres in the BED format
-	less AnnotationData/danRer11-centromeres.tsv | tail -n +3 >> ${dir}/hgTables_centromeric_regions_38.bed
-	less ${dir}/hgTables_centromeric_regions_38.bed | awk -v OFS="\t" '{print $1, $2, $3}' >> ${dir}/Centromeres.bed 
-
-	# get genomic regions of length ${dist_from_centromeres} base pairs flanking centromeres from both sides
-	bedtools slop -b ${dist_from_centromeres} -i ${dir}/Centromeres.bed -g AnnotationData/danRer11-chromInfo.txt >> ${dir}/Centromeres_with_flanks.bed
-
-	# merge regions containing centromeres and their flanking regions
-	sortBed -i ${dir}/Centromeres_with_flanks.bed >> ${dir}/Centromeres_with_flanks_sorted.bed
-
-	bedtools merge -i ${dir}/Centromeres_with_flanks_sorted.bed >> ${dir}/Centromeres_with_flanks_merged.bed
-
-	echo "Centromere annotations processed."
+    add_flanks_and_merge "${DIR}/gaps.bed" "$DIR" "$dist_from_gaps"
 fi
 
-#=======================================================================
-#   	Gaps: telomeres and other regions that cannot be sequenced
-#=======================================================================
+#------------------------ MERGE ALL REGIONS TO AVOID ------------------#
+echo "[+] Merging all exclusion regions"
+MERGE_DIR="${TMP_DIR}/merge"
+mkdir -p "$MERGE_DIR"
 
-if [ "$gaps" = true ] ; then
-	echo "Distance from gaps = ${dist_from_gaps}" bp
+ALL_BEDS=()
 
-	mkdir tmpGsh/gaps
-	dir=tmpGsh/gaps
+for TYPE in genes oncogenes micrornas trnas lncrnas enhancers centromeres gaps; do
+    VAR_NAME="$TYPE"
+    if [ "${!VAR_NAME}" = true ]; then
+        FILE=$(find "${TMP_DIR}/${TYPE}" -name "*_with_flanks_merged.bed")
+        if [ -f "$FILE" ]; then
+            cat "$FILE" >> "${MERGE_DIR}/regions_to_avoid.bed"
+        fi
+    fi
+done
 
-	# get genomic coordinates of gaps in the BED format
-	less AnnotationData/danRer11-gap.txt | tail -n +2 | cut -f 2,3,4 >> ${dir}/hgTables_gaps.bed
+sortBed -i "${MERGE_DIR}/regions_to_avoid.bed" > "${MERGE_DIR}/regions_to_avoid_sorted.bed"
+bedtools merge -i "${MERGE_DIR}/regions_to_avoid_sorted.bed" > "${MERGE_DIR}/regions_to_avoid_merged.bed"
 
-	# get genomic regions of length ${dist_from_centromeres} base pairs flanking gaps from both sides
-	bedtools slop -b ${dist_from_gaps} -i ${dir}/hgTables_gaps.bed -g AnnotationData/danRer11-chromInfo.txt >> ${dir}/Gaps_with_flanks.bed
+#------------------------ IDENTIFY SAFE HARBORS ------------------------#
+echo "[+] Identifying Safe Harbor regions"
 
-	# merge regions containing gaps and their flanking regions
-	sortBed -i ${dir}/Gaps_with_flanks.bed >> ${dir}/Gaps_with_flanks_sorted.bed
+SAFE_DIR="${OUTPUT_DIR}/safe_harbors"
+mkdir -p "$SAFE_DIR"
 
-	bedtools merge -i ${dir}/Gaps_with_flanks_sorted.bed >> ${dir}/Gaps_with_flanks_merged.bed
+bedtools subtract \
+    -a "${INPUT_DIR}/danRer11-chrom_coordinates.bed" \
+    -b "${MERGE_DIR}/regions_to_avoid_merged.bed" \
+    > "${SAFE_DIR}/Safe_harbors_with_alt.bed"
 
-	echo "Gap annotations processed."
-fi
+grep -v '_' "${SAFE_DIR}/Safe_harbors_with_alt.bed" > "${SAFE_DIR}/Safe_harbors.bed"
+sortBed -i "${SAFE_DIR}/Safe_harbors.bed" > "${OUTPUT_DIR}/Safe_harbors.bed"
 
-#=======================================================================
-#		 		  Union of all genomic regions to avoid
-#=======================================================================
+bedtools getfasta \
+    -fi "${INPUT_DIR}/Danio_rerio.GRCz11.dna.primary_assembly.fa" \
+    -bed "${OUTPUT_DIR}/Safe_harbors.bed" \
+    > "${OUTPUT_DIR}/Safe_harbors.fasta"
 
-echo "Merging all genomic regions to avoid"
-
-mkdir tmpGsh/merge
-dir=tmpGsh/merge
-
-# intersect of regions to avoid together
-if [ "$genes" = true ] ; then
-	cat tmpGsh/genes/gencode_v24_annotation_genes_with_flanks_merged.bed >> ${dir}/Regions_to_avoid.bed
-fi
-
-if [ "$genes" = true ] ; then
-	cat tmpGsh/oncogenes/gencode_v24_annotation_oncogenes_with_flanks_merged.bed >> ${dir}/Regions_to_avoid.bed
-fi
-
-if [ "$micrornas" = true ] ; then
-	cat tmpGsh/micrornas/Micrornas_with_flanks_merged.bed >> ${dir}/Regions_to_avoid.bed
-fi
-
-if [ "$trnas" = true ] ; then
-	cat tmpGsh/trnas/gencode_v24_tRNAs_with_flanks_merged.bed >> ${dir}/Regions_to_avoid.bed
-fi
-
-if [ "$lncrnas" = true ] ; then
-	cat tmpGsh/lncrnas/gencode_v24_long_noncoding_RNAs_with_flanks_merged.bed >> ${dir}/Regions_to_avoid.bed
-fi
-
-if [ "$enhancers" = true ] ; then
-	cat tmpGsh/enhancers/All_human_enhancers_with_flank_merged.bed >> ${dir}/Regions_to_avoid.bed
-fi
-
-if [ "$centromeres" = true ] ; then
-	cat tmpGsh/centromeres/Centromeres_with_flanks_merged.bed >> ${dir}/Regions_to_avoid.bed
-fi
-
-if [ "$gaps" = true ] ; then
-	cat tmpGsh/gaps/Gaps_with_flanks_merged.bed >> ${dir}/Regions_to_avoid.bed
-fi
-
-sortBed -i ${dir}/Regions_to_avoid.bed >> ${dir}/Regions_to_avoid_sorted.bed
-
-bedtools merge -i ${dir}/Regions_to_avoid_sorted.bed >> ${dir}/Regions_to_avoid_merged.bed
-
-#=======================================================================
-#							Safe harbors
-#=======================================================================
-
-echo "Obtaining genomic coordinates and sequences of safe harbors"
-
-mkdir tmpGsh/safe_harbors
-dir=tmpGsh/safe_harbors
-
-# substract all regions to avoid from the whole genome
-bedtools subtract -a AnnotationData/danRer11-chrom_coordinates.bed -b tmpGsh/merge/Regions_to_avoid_merged.bed >> ${dir}/Safe_harbors_with_alt.bed
-
-# exclude pseudo-chromosomes and alterative loci
-grep -v '_' ${dir}/Safe_harbors_with_alt.bed >> ${dir}/Safe_harbors.bed
-
-FILE=Safe_harbors.bed
-if [[ -f "$FILE" ]]; then
-    rm $FILE
-fi
-
-sortBed -i ${dir}/Safe_harbors.bed >> Safe_harbors.bed
-
-FILE=Safe_harbors.fasta
-if [[ -f "$FILE" ]]; then
-    rm $FILE
-fi
-
-# get sequences of those regions
-bedtools getfasta -fi AnnotationData/Danio_rerio.GRCz11.dna.primary_assembly.fa -bed Safe_harbors.bed >> Safe_harbors.fasta
-
-echo "----- Safe Harbor bed file created with a list of GSH -----"
-wc -l Safe_harbors.bed
-
-echo "Files modified ...."
-ls -l
-
-# Copy output files/folders to mounted volume path for host access
-echo "Copying output files and folders to the mounted volume..."
-
-# mkdir Output
-
-echo "Preparing clean output directory..."
-
-# Remove if already exists
-if [ -d Output ]; then
-    rm -rf Output
-fi
-
-# Recreate clean output folder
-mkdir -p Output
-
-# Copy the tmpGsh folder
-mv tmpGsh Output/
-
-# Copy Safe_harbors output files
-mv Safe_harbors.bed Output/
-mv Safe_harbors.fasta Output/
-
-echo "Copy finished."
-echo "Outputs are saved inside directory Output/"
-echo "Good Luck with the Hackathon...! "
+echo "Results written to ${OUTPUT_DIR}/Safe_harbors.bed and .fasta"
 
 
 # docker tag local-image:tagname new-repo:tagname
