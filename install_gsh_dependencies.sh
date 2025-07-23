@@ -26,7 +26,7 @@ BEDOPS_VERSION="v2.4.41"
 BEDOPS_ARCHIVE="bedops_linux_x86_64-${BEDOPS_VERSION}.tar.bz2"
 wget https://github.com/bedops/bedops/releases/download/${BEDOPS_VERSION}/${BEDOPS_ARCHIVE}
 tar -xvjf ${BEDOPS_ARCHIVE}
-sudo cp bedops*/bin/* /usr/local/bin/
+sudo cp bin/* /usr/local/bin/
 rm -rf bedops* ${BEDOPS_ARCHIVE}
 
 # Confirm gtf2bed is working
