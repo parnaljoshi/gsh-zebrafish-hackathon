@@ -276,7 +276,7 @@ if [ "$gaps" = true ]; then
     DIR="${TMP_DIR}/gaps"
     mkdir -p "$DIR"
 
-    tail -n +2 "${INPUT_DIR}/danRer11-gap.txt" | cut -f 2,3,4 > "${DIR}/gaps.bed"
+    tail -n +2 "${INPUT_DIR}/danRer11-gaps.txt" | cut -f 2,3,4 > "${DIR}/gaps.bed"
     tail -n +2 "${INPUT_DIR}/danRer11-gaps.txt" | cut -f 1,2,3 > "${DIR}/gaps.bed"
 
     add_flanks_and_merge "${DIR}/gaps.bed" "$DIR" "$dist_from_gaps"
