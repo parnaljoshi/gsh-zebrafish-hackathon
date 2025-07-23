@@ -83,7 +83,7 @@ To obtain a confident list of safe harbor sites across different zebrafish devel
 You can get started using either the **provided Docker container** or by **setting up the environment manually**. To run the provided Docker container, download the data from Box https://iastate.app.box.com/s/rw07ev9hvlcc4f63e5361jrpmq7e4fne, and make sure the following directory structure exists:
 
 ```
-.                                # Working directory
+.                                # Working directory to run Docker from
 ├── AnnotationData/              # Contains all input files and receives output
     ├── Danio_rerio.GRCz11.113.gtf
     ├── danRer11-chromInfo.txt
@@ -105,6 +105,8 @@ The list of safe harbors will be written to **`Output/Safe_harbors.bed`**. The d
    ```
    
 3. **Run the container**:
+
+   `docker run` needs to be executed from the same directory where `AnnotationData/` folder is placed.
 
    On **Linux/MacOS**:
    ```bash
