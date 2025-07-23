@@ -179,7 +179,7 @@ if [ "$genes" = true ] ; then
 	dir=tmpGsh/genes
 
 	echo "1. Extracting gene entries from GTF..."
-    grep -P '\tgene\t' /app/data/annotationdata/Danio_rerio.GRCz11.113.gtf > ${dir}/gencode_gene_anotation.gtf
+    grep -P '\tgene\t' AnnotationData/Danio_rerio.GRCz11.113.gtf > ${dir}/gencode_gene_anotation.gtf
 	wc -l ${dir}/gencode_gene_anotation.gtf
 
 	echo "2. Adding dummy transcript_id if missing..."
@@ -207,7 +207,7 @@ if [ "$genes" = true ] ; then
 	echo "5. Adding ${dist_from_genes} bp flanks to gene coordinates..."
 	bedtools slop -b ${dist_from_genes} \
 		-i ${dir}/gencode_v24_annotation_genes.bed \
-		-g /app/data/annotationdata/danRer11-chromInfo.txt \
+		-g AnnotationData/danRer11-chromInfo.txt \
 		> ${dir}/gencode_v24_annotation_genes_with_flanks.bed
 	wc -l ${dir}/gencode_v24_annotation_genes_with_flanks.bed
 
@@ -238,7 +238,7 @@ if [ "$oncogenes" = true ] ; then
 
 	# Step 1: Extract GTF entries for oncogenes
 	echo "Extracting GTF entries for oncogenes..."
-	grep -w -f /app/data/annotationdata/danRer11-oncogenes_list.txt tmpGsh/genes/gencode_v24_annotation_genes_transcript_id.gtf \
+	grep -w -f AnnotationData/danRer11-oncogenes_list.txt tmpGsh/genes/gencode_v24_annotation_genes_transcript_id.gtf \
 		> ${dir}/gencode_oncogenes_annotation_transcript_id.gtf
 	echo "GTF lines extracted: $(wc -l < ${dir}/gencode_oncogenes_annotation_transcript_id.gtf)"
 
@@ -257,7 +257,7 @@ if [ "$oncogenes" = true ] ; then
 
 	# Step 4: Filter BED entries to match only known chromosomes in chromInfo
 	echo "Filtering BED entries to only include chromosomes listed in danRer11-chromInfo.txt..."
-	cut -f1 /app/data/annotationdata/danRer11-chromInfo.txt | sort | uniq > ${dir}/valid_chroms.txt
+	cut -f1 AnnotationData/danRer11-chromInfo.txt | sort | uniq > ${dir}/valid_chroms.txt
 
 	awk 'NR==FNR {valid[$1]; next} $1 in valid' ${dir}/valid_chroms.txt ${dir}/gencode_v24_annotation_oncogenes.bed \
 	> ${dir}/gencode_v24_annotation_oncogenes_filtered.bed
@@ -265,7 +265,7 @@ if [ "$oncogenes" = true ] ; then
 
 	# Step 5: Add flanking regions to each oncogene
 	echo "Adding flanks of ${dist_from_oncogenes} bp to each oncogene region..."
-	bedtools slop -b ${dist_from_oncogenes} -i ${dir}/gencode_v24_annotation_oncogenes_filtered.bed -g /app/data/annotationdata/danRer11-chromInfo.txt \
+	bedtools slop -b ${dist_from_oncogenes} -i ${dir}/gencode_v24_annotation_oncogenes_filtered.bed -g AnnotationData/danRer11-chromInfo.txt \
 		> ${dir}/gencode_v24_annotation_oncogenes_with_flanks.bed
 	echo "Oncogene regions with flanks: $(wc -l < ${dir}/gencode_v24_annotation_oncogenes_with_flanks.bed)"
 
@@ -294,7 +294,7 @@ if [ "$micrornas" = true ] ; then
 	dir=tmpGsh/micrornas
 	
 	# get genomic regions of length ${dist_from_micrornas} base pairs flanking microRNAs from both sides
-	bedtools slop -b ${dist_from_micrornas} -i /app/data/annotationdata/danRer11-miRNAs.bed -g /app/data/annotationdata/danRer11-chromInfo.txt >> ${dir}/Micrornas_with_flanks.bed
+	bedtools slop -b ${dist_from_micrornas} -i AnnotationData/danRer11-miRNAs.bed -g AnnotationData/danRer11-chromInfo.txt >> ${dir}/Micrornas_with_flanks.bed
 
 	# merge regions containing microRNAs and their flanking regions
 	sortBed -i ${dir}/Micrornas_with_flanks.bed >> ${dir}/Micrornas_with_flanks_sorted.bed
@@ -314,12 +314,12 @@ if [ "$lncrnas" = true ] ; then
 	dir=tmpGsh/lncrnas
 
 	# get lncRNA annotation from GENCODE
-	awk '{ if ($0 ~ "transcript_id") print $0; else print $0" transcript_id \"\";"; }' /app/data/annotationdata/danRer11-lncRNA.gtf >> ${dir}/gencode_v24_long_noncoding_RNAs_transcript_id.gtf
+	awk '{ if ($0 ~ "transcript_id") print $0; else print $0" transcript_id \"\";"; }' AnnotationData/danRer11-lncRNA.gtf >> ${dir}/gencode_v24_long_noncoding_RNAs_transcript_id.gtf
 
 	gtf2bed < ${dir}/gencode_v24_long_noncoding_RNAs_transcript_id.gtf | awk -v OFS="\t" '{print $1, $2, $3}' >> ${dir}/gencode_v24_long_noncoding_RNAs.bed
 
 	# get genomic regions of length ${dist_from_lncrnas} base pairs flanking lncRNAs from both sides
-	bedtools slop -b ${dist_from_lncrnas} -i ${dir}/gencode_v24_long_noncoding_RNAs.bed -g /app/data/annotationdata/danRer11-chromInfo.txt >> ${dir}/gencode_v24_long_noncoding_RNAs_with_flanks.bed
+	bedtools slop -b ${dist_from_lncrnas} -i ${dir}/gencode_v24_long_noncoding_RNAs.bed -g AnnotationData/danRer11-chromInfo.txt >> ${dir}/gencode_v24_long_noncoding_RNAs_with_flanks.bed
 
 	# merge regions containing lncRNAs and their flanking regions
 	sortBed -i ${dir}/gencode_v24_long_noncoding_RNAs_with_flanks.bed >> ${dir}/gencode_v24_long_noncoding_RNAs_with_flanks_sorted.bed
@@ -338,10 +338,10 @@ if [ "$trnas" = true ] ; then
 	dir=tmpGsh/trnas
 
 	# get tRNA annotation from GENCODE
-	gtf2bed < /app/data/annotationdata/danRer11-tRNAs.gtf | awk -v OFS="\t" '{print $1, $2, $3}' >> ${dir}/gencode_v24_tRNAs.bed
+	gtf2bed < AnnotationData/danRer11-tRNAs.gtf | awk -v OFS="\t" '{print $1, $2, $3}' >> ${dir}/gencode_v24_tRNAs.bed
 
 	# get genomic regions of length ${dist_from_trnas} base pairs flanking tRNAs from both sides
-	bedtools slop -b ${dist_from_trnas} -i ${dir}/gencode_v24_tRNAs.bed -g /app/data/annotationdata/danRer11-chromInfo.txt >> ${dir}/gencode_v24_tRNAs_with_flanks.bed
+	bedtools slop -b ${dist_from_trnas} -i ${dir}/gencode_v24_tRNAs.bed -g AnnotationData/danRer11-chromInfo.txt >> ${dir}/gencode_v24_tRNAs_with_flanks.bed
 
 	# merge regions containing tRNAs and their flanking regions
 	sortBed -i ${dir}/gencode_v24_tRNAs_with_flanks.bed >> ${dir}/gencode_v24_tRNAs_with_flanks_sorted.bed
@@ -361,7 +361,7 @@ if [ "$enhancers" = true ] ; then
 	dir=tmpGsh/enhancers
 	
 	# get genomic regions of length ${dist_from_enhancers} base pairs flanking enhancers from both sides
-	bedtools slop -b ${dist_from_enhancers} -i /app/data/annotationdata/danRer11-enhancers.bed -g /app/data/annotationdata/danRer11-chromInfo.txt >> ${dir}/All_human_enhancers_with_flanks.bed
+	bedtools slop -b ${dist_from_enhancers} -i AnnotationData/danRer11-enhancers.bed -g AnnotationData/danRer11-chromInfo.txt >> ${dir}/All_human_enhancers_with_flanks.bed
 
 	# merge regions containing enhancers and their flanking regions
 	sortBed -i ${dir}/All_human_enhancers_with_flanks.bed >> ${dir}/All_human_enhancers_with_flanks_sorted.bed
@@ -381,11 +381,11 @@ if [ "$centromeres" = true ] ; then
 	dir=tmpGsh/centromeres
 
 	# get genomic coordinates of centromeres in the BED format
-	less /app/data/annotationdata/danRer11-centromeres.tsv | tail -n +3 >> ${dir}/hgTables_centromeric_regions_38.bed
+	less AnnotationData/danRer11-centromeres.tsv | tail -n +3 >> ${dir}/hgTables_centromeric_regions_38.bed
 	less ${dir}/hgTables_centromeric_regions_38.bed | awk -v OFS="\t" '{print $1, $2, $3}' >> ${dir}/Centromeres.bed 
 
 	# get genomic regions of length ${dist_from_centromeres} base pairs flanking centromeres from both sides
-	bedtools slop -b ${dist_from_centromeres} -i ${dir}/Centromeres.bed -g /app/data/annotationdata/danRer11-chromInfo.txt >> ${dir}/Centromeres_with_flanks.bed
+	bedtools slop -b ${dist_from_centromeres} -i ${dir}/Centromeres.bed -g AnnotationData/danRer11-chromInfo.txt >> ${dir}/Centromeres_with_flanks.bed
 
 	# merge regions containing centromeres and their flanking regions
 	sortBed -i ${dir}/Centromeres_with_flanks.bed >> ${dir}/Centromeres_with_flanks_sorted.bed
@@ -404,10 +404,10 @@ if [ "$gaps" = true ] ; then
 	dir=tmpGsh/gaps
 
 	# get genomic coordinates of gaps in the BED format
-	less /app/data/annotationdata/danRer11-gap.txt | tail -n +2 | cut -f 2,3,4 >> ${dir}/hgTables_gaps.bed
+	less AnnotationData/danRer11-gap.txt | tail -n +2 | cut -f 2,3,4 >> ${dir}/hgTables_gaps.bed
 
 	# get genomic regions of length ${dist_from_centromeres} base pairs flanking gaps from both sides
-	bedtools slop -b ${dist_from_gaps} -i ${dir}/hgTables_gaps.bed -g /app/data/annotationdata/danRer11-chromInfo.txt >> ${dir}/Gaps_with_flanks.bed
+	bedtools slop -b ${dist_from_gaps} -i ${dir}/hgTables_gaps.bed -g AnnotationData/danRer11-chromInfo.txt >> ${dir}/Gaps_with_flanks.bed
 
 	# merge regions containing gaps and their flanking regions
 	sortBed -i ${dir}/Gaps_with_flanks.bed >> ${dir}/Gaps_with_flanks_sorted.bed
@@ -471,7 +471,7 @@ mkdir tmpGsh/safe_harbors
 dir=tmpGsh/safe_harbors
 
 # substract all regions to avoid from the whole genome
-bedtools subtract -a /app/data/annotationdata/danRer11-chrom_coordinates.bed -b tmpGsh/merge/Regions_to_avoid_merged.bed >> ${dir}/Safe_harbors_with_alt.bed
+bedtools subtract -a AnnotationData/danRer11-chrom_coordinates.bed -b tmpGsh/merge/Regions_to_avoid_merged.bed >> ${dir}/Safe_harbors_with_alt.bed
 
 # exclude pseudo-chromosomes and alterative loci
 grep -v '_' ${dir}/Safe_harbors_with_alt.bed >> ${dir}/Safe_harbors.bed
@@ -489,7 +489,7 @@ if [[ -f "$FILE" ]]; then
 fi
 
 # get sequences of those regions
-bedtools getfasta -fi /app/data/annotationdata/Danio_rerio.GRCz11.dna.primary_assembly.fa -bed Safe_harbors.bed >> Safe_harbors.fasta
+bedtools getfasta -fi AnnotationData/Danio_rerio.GRCz11.dna.primary_assembly.fa -bed Safe_harbors.bed >> Safe_harbors.fasta
 
 echo "----- Safe Harbor bed file created with a list of GSH -----"
 wc -l Safe_harbors.bed
@@ -500,24 +500,24 @@ ls -l
 # Copy output files/folders to mounted volume path for host access
 echo "Copying output files and folders to the mounted volume..."
 
-# mkdir /app/data/annotationdata/output/
+# mkdir AnnotationData/output/
 
 echo "Preparing clean output directory..."
 
 # Remove if already exists
-if [ -d /app/data/annotationdata/output ]; then
-    rm -rf /app/data/annotationdata/output
+if [ -d AnnotationData/output ]; then
+    rm -rf AnnotationData/output
 fi
 
 # Recreate clean output folder
-mkdir -p /app/data/annotationdata/output
+mkdir -p AnnotationData/output
 
 # Copy the tmpGsh folder
-cp -r tmpGsh /app/data/annotationdata/output/tmpGsh
+cp -r tmpGsh AnnotationData/output/tmpGsh
 
 # Copy Safe_harbors output files
-cp Safe_harbors.bed /app/data/annotationdata/output/
-cp Safe_harbors.fasta /app/data/annotationdata/output/
+cp Safe_harbors.bed AnnotationData/output/
+cp Safe_harbors.fasta AnnotationData/output/
 
 echo "Copy finished."
 echo "Outputs are saved inside the mounted volume /AnnotationData/output/"
